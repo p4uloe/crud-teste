@@ -1,44 +1,72 @@
-import { Injectable, Module } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
-import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UsersService{
+export class UsersService {
+  	constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+	async create(createUserDto: CreateUserDto) {
+		try {
+			if(createUserDto.password)
+				createUserDto.password = bcrypt.hashSync(createUserDto.password, 20);
 
-  create(createUserDto: CreateUserDto) {
-    const user = new this.userModel(createUserDto);
-    return user.save();
-  }
+			const user = new this.userModel(createUserDto);
+			return await user.save();
+		} catch (erro) {
+			throw new HttpException('Erro de cadastro!', HttpStatus.BAD_REQUEST);
+		}
+	}
 
-  findAll() {
-    return this.userModel.find();
-  }
+	async findAll() {
+		return await this.userModel.find()
+			.select('name')
+			.select('username')
+			.select('role')
+			.select('sector');
+	}
 
-  findOne(id: string) {
-    return this.userModel.findById(id);
-  }
+	async findOne(id: string) {
+		return await this.userModel.findById(id)
+			.select('name')
+			.select('username')
+			.select('role')
+			.select('sector');
+	}
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userModel.findByIdAndUpdate(
-      {
-      _id: id,
-      }, {
-        $set: updateUserDto,
-      },{
-        new: true,
-      },
-    );
-  }
+	async findUsername(username: string) {
+		return await this.userModel.findOne({
+			'username': username
+		});
+	}
 
-  remove(id: string) {
-    return this.userModel.deleteOne({
-      _id: id,
-    })
-    .exec();
-  }
+	async update(id: string, updateUserDto: UpdateUserDto) {
+		return await this.userModel.findByIdAndUpdate(
+			{
+				_id: id,
+			},
+			{
+				$set: updateUserDto,
+			},
+			{
+				new: true,
+			}
+		).catch(function () {
+			throw new HttpException("Erro de atualização!", HttpStatus.BAD_REQUEST);
+		});
+	}
+
+	remove(id: string): Object {
+		return this.userModel.deleteOne({
+			_id: id,
+		})
+		.exec()
+		.catch(function () {
+			throw new HttpException("Erro ao deletar!", HttpStatus.BAD_REQUEST);
+		});
+	}
 }
