@@ -1,0 +1,12 @@
+version: '2.0'
+
+services:
+
+  api:
+    container_name: crud_teste
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/api/backend/
+      - /api/backend/node_modules
