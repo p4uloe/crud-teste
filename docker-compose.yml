@@ -1,4 +1,4 @@
-version: '2.0'
+version: '3.9' # optional since v1.27.0
 
 services:
 
@@ -8,5 +8,5 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/api/backend/
-      - /api/backend/node_modules
+      - .:/api
+      - /api/node_modules

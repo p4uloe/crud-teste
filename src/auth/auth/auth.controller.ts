@@ -4,7 +4,7 @@ import { RoleGuard } from '../role.guard';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt.guard';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 

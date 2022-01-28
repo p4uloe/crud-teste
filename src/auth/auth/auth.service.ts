@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
@@ -23,7 +23,7 @@ export class AuthService {
             
             return this.jwtService.sign(payload);
         } else {
-            return null;
+            throw new HttpException('Erro ao logar!', HttpStatus.BAD_REQUEST);
         }
     }
 

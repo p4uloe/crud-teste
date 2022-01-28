@@ -27,15 +27,16 @@ export class UsersService {
 			.select('name')
 			.select('username')
 			.select('role')
-			.select('sector');
+			.select('sector')
+			.select('password');
 	}
 
 	async findOne(id: string) {
 		return await this.userModel.findById(id)
 			.select('name')
 			.select('username')
+			.select('sector')
 			.select('role')
-			.select('sector');
 	}
 
 	async findUsername(username: string) {

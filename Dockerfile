@@ -1,5 +1,5 @@
 FROM node:16-alpine
 
-WORKDIR /api/backend/
+WORKDIR /api
 
 CMD npm run start:docker:dev
